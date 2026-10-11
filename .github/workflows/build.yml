@@ -14,12 +14,21 @@ jobs:
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
-          
-      - run: flutter pub get
-      - run: flutter build apk --release
-      
-      - uses: actions/upload-artifact@v4
+
+      - name: Setup Flutter App Project
+        run: |
+          mkdir temp_app
+          cd temp_app
+          flutter create --org com.magiccrop.app --project-name magic_crop .
+          cp -f ../pubspec.yaml ./pubspec.yaml
+          cp -f ../lib/main.dart ./lib/main.dart
+          flutter pub get
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk ../app-release.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app-release.apk
           
